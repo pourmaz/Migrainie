@@ -352,7 +352,7 @@ struct LogMigraineView: View {
                 LinearGradient(colors: [GreenPalette.lightest, GreenPalette.midLight],
                                startPoint: .top,
                                endPoint: .bottom)
-                    .ignoresSafeArea()
+                .ignoresSafeArea()
             )
         }
     }
@@ -411,17 +411,40 @@ struct LogMigraineView: View {
             endDate = customEndDate
         }
         
-        let attack = MigraineAttack(
-            startDate: startDate,
-            endDate: endDate,
-            severity: 5,          // default for now – can extend later
-            hasAura: false,
-            notes: nil,
-            triggers: []
-        )
-        
-        appState.addAttack(attack)
-        dismiss()
+        let day = Calendar.current.startOfDay(for: startDate)
+
+        if HealthKitManager.shared.isAuthorized {
+            HealthKitManager.shared.fetchDailyContext(for: day) { ctx in
+                DispatchQueue.main.async {
+                    appState.upsertContext(ctx)  // stores and backfills
+                    var attack = MigraineAttack(
+                        startDate: startDate,
+                        endDate: endDate,
+                        severity: 5,
+                        hasAura: false,
+                        notes: nil,
+                        triggers: []
+                    )
+                    attack.linkedContextDay = day
+                    attack.linkedContextSnapshot = ctx
+                    appState.addAttack(attack)
+                    dismiss()
+                }
+            }
+        } else {
+            // Save without context if not authorized
+            let attack = MigraineAttack(
+                startDate: startDate,
+                endDate: endDate,
+                severity: 5,
+                hasAura: false,
+                notes: nil,
+                triggers: []
+            )
+            appState.addAttack(attack)
+            dismiss()
+        }
+
+        }
     }
-}
 

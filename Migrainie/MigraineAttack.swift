@@ -8,6 +8,9 @@ struct MigraineAttack: Identifiable, Codable {
     var hasAura: Bool
     var notes: String?
     var triggers: [String]
+    var linkedContextDay: Date?
+    var linkedContextSnapshot: DailyContext?
+
     
     init(
         id: UUID = UUID(),

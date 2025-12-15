@@ -6,13 +6,31 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		78B6FE372EF0129A002BF9FB /* DailyContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78B6FE362EF01286002BF9FB /* DailyContext.swift */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		786CA0FF2EE19BA500EA7528 /* Migrainie.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Migrainie.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		78B6FE362EF01286002BF9FB /* DailyContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyContext.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		78B6FE352EF011BF002BF9FB /* Exceptions for "Migrainie" folder in "Migrainie" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 786CA0FE2EE19BA500EA7528 /* Migrainie */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		786CA1012EE19BA500EA7528 /* Migrainie */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				78B6FE352EF011BF002BF9FB /* Exceptions for "Migrainie" folder in "Migrainie" target */,
+			);
 			path = Migrainie;
 			sourceTree = "<group>";
 		};
@@ -32,6 +50,7 @@
 		786CA0F62EE19BA500EA7528 = {
 			isa = PBXGroup;
 			children = (
+				78B6FE362EF01286002BF9FB /* DailyContext.swift */,
 				786CA1012EE19BA500EA7528 /* Migrainie */,
 				786CA1002EE19BA500EA7528 /* Products */,
 			);
@@ -119,6 +138,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				78B6FE372EF0129A002BF9FB /* DailyContext.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -251,11 +271,15 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Migrainie/Migrainie.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = A23Y9LM36S;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Migrainie/Info.plist;
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "Migrainie reads sleep, heart rate, and activity data to help understand migraine patterns.\nMigrainie reads sleep, heart rate, and activity data to help understand migraine patterns.\nMigrainie reads sleep, heart rate, and activity data to help understand migraine patterns.\nMigrainie reads sleep, heart rate, and activity data to help understand migraine patterns.\nMigrainie reads sleep, heart rate, and activity data to help understand migraine patterns.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Migrainie does not write health data. It only reads your data for personal insights.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -283,11 +307,15 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Migrainie/Migrainie.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = A23Y9LM36S;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Migrainie/Info.plist;
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "Migrainie reads sleep, heart rate, and activity data to help understand migraine patterns.\nMigrainie reads sleep, heart rate, and activity data to help understand migraine patterns.\nMigrainie reads sleep, heart rate, and activity data to help understand migraine patterns.\nMigrainie reads sleep, heart rate, and activity data to help understand migraine patterns.\nMigrainie reads sleep, heart rate, and activity data to help understand migraine patterns.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Migrainie does not write health data. It only reads your data for personal insights.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

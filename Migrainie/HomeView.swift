@@ -3,7 +3,8 @@ import SwiftUI
 struct HomeView: View {
     @EnvironmentObject var appState: AppState
     @State private var showLogSheet = false
-    
+    @EnvironmentObject var healthKit: HealthKitManager
+
     var body: some View {
         NavigationStack {
             ZStack {
@@ -13,6 +14,7 @@ struct HomeView: View {
                     VStack(spacing: 18) {
                         headerCard
                         summaryCard
+                        healthStatusCard
                         recentAttacksCard
                     }
                     .padding()
@@ -45,6 +47,30 @@ struct HomeView: View {
                 LogMigraineView()
             }
         }
+    }
+    
+    
+    private var healthStatusCard: some View {
+        HStack {
+            Image(systemName: healthKit.isAuthorized ? "heart.fill" : "heart.slash")
+                .foregroundColor(AppTheme.primary)
+            Text(healthKit.isAuthorized ? "Apple Health connected" : "Apple Health not connected")
+                .font(.callout)
+                .foregroundColor(.secondary)
+            Spacer()
+            if !healthKit.isAuthorized {
+                NavigationLink("Connect") {
+                    SettingsView()
+                }
+                .foregroundColor(AppTheme.primary)
+                .font(.callout.weight(.semibold))
+            }
+        }
+        .cardStyle()
+    }
+
+    private var recentAttacks: [MigraineAttack] {
+        Array(appState.attacks.sorted { $0.startDate > $1.startDate }.prefix(3))
     }
     
     private var headerCard: some View {
@@ -101,24 +127,40 @@ struct HomeView: View {
                     .font(.callout)
                     .foregroundColor(.secondary)
             } else {
-                ForEach(appState.attacks.sorted { $0.startDate > $1.startDate }.prefix(3)) { attack in
-                    HStack {
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(attack.startDate, style: .date)
-                                .font(.subheadline)
-                            Text("Severity \(attack.severity)/10")
-                                .font(.footnote)
-                                .foregroundColor(.secondary)
+                ForEach(recentAttacks) { attack in
+                    VStack(alignment: .leading, spacing: 6) {
+                        HStack {
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(attack.startDate, style: .date)
+                                    .font(.subheadline)
+                                
+                                Text("Severity \(attack.severity)/10")
+                                    .font(.footnote)
+                                    .foregroundColor(.secondary)
+                            }
+                            
+                            Spacer()
+                            
+                            if attack.hasAura {
+                                Text("Aura")
+                                    .font(.caption)
+                                    .padding(.horizontal, 8)
+                                    .padding(.vertical, 4)
+                                    .background(AppTheme.secondary.opacity(0.3))
+                                    .foregroundColor(AppTheme.primary)
+                                    .cornerRadius(10)
+                            }
                         }
-                        Spacer()
-                        if attack.hasAura {
-                            Text("Aura")
-                                .font(.caption)
-                                .padding(.horizontal, 8)
-                                .padding(.vertical, 4)
-                                .background(AppTheme.secondary.opacity(0.3))
-                                .foregroundColor(AppTheme.primary)
-                                .cornerRadius(10)
+                        
+                        if let ctx = attack.linkedContextSnapshot {
+                            let sleep = String(format: "%.1f", ctx.sleepHours ?? 0)
+                            let steps = Int(ctx.steps ?? 0)
+                            let hr = Int(ctx.avgHeartRateBpm ?? 0)
+
+                            Text(verbatim: "Sleep \(sleep)h • Steps \(steps) • HR \(hr)")
+
+                            .font(.caption)
+                            .foregroundColor(.secondary)
                         }
                     }
                     .padding(.vertical, 4)
@@ -128,3 +170,4 @@ struct HomeView: View {
         .cardStyle()
     }
 }
+

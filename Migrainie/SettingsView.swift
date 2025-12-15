@@ -1,7 +1,9 @@
 import SwiftUI
 
 struct SettingsView: View {
+    @EnvironmentObject var healthKit: HealthKitManager
     @EnvironmentObject var appState: AppState
+
     @State private var showClearAlert = false
     @State private var notificationErrorMessage: String?
 
@@ -13,6 +15,7 @@ struct SettingsView: View {
                 ScrollView {
                     VStack(spacing: 16) {
                         profileCard
+                        healthCard
                         reminderCard
                         loggingCard
                         dataCard
@@ -31,7 +34,6 @@ struct SettingsView: View {
             } message: {
                 Text("This will remove all migraine attacks you’ve logged so far. Your profile and settings will stay.")
             }
-            // React to reminder changes
             .onChange(of: appState.settings.dailyReminderEnabled) { _ in
                 handleReminderChange()
             }
@@ -49,7 +51,6 @@ struct SettingsView: View {
         notificationErrorMessage = nil
 
         if appState.settings.dailyReminderEnabled {
-            // Ask for permission, then schedule
             NotificationManager.shared.requestAuthorization { granted in
                 DispatchQueue.main.async {
                     if granted {
@@ -58,12 +59,12 @@ struct SettingsView: View {
                         )
                     } else {
                         appState.settings.dailyReminderEnabled = false
-                        notificationErrorMessage = "Notifications are not allowed. You can enable them in iOS Settings → Notifications → Migrainie."
+                        notificationErrorMessage =
+                        "Notifications are not allowed. You can enable them in iOS Settings → Notifications → Migrainie."
                     }
                 }
             }
         } else {
-            // Toggle off → cancel reminder
             NotificationManager.shared.cancelDailyReminder()
         }
     }
@@ -89,6 +90,33 @@ extension SettingsView {
                 }
             }
             .foregroundColor(.primary)
+        }
+        .cardStyle()
+    }
+
+    private var healthCard: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("Apple Health")
+                .font(.headline)
+
+            HStack {
+                Text("Status")
+                Spacer()
+                Text(healthKit.isAuthorized ? "Connected" : "Not connected")
+                    .foregroundColor(healthKit.isAuthorized ? AppTheme.primary : .secondary)
+            }
+
+            Button {
+                healthKit.requestAuthorization { _ in }
+            } label: {
+                Text(healthKit.isAuthorized ? "Re-check permissions" : "Connect Apple Health")
+                    .fontWeight(.semibold)
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(AppTheme.primary)
+                    .foregroundColor(.white)
+                    .cornerRadius(AppTheme.cornerRadius)
+            }
         }
         .cardStyle()
     }

@@ -6,10 +6,38 @@ final class AppState: ObservableObject {
     @Published var settings: UserSettings = UserSettings()   // 👈 NEW
     
     @Published var attacks: [MigraineAttack] = []
+    @Published var dailyContexts: [Date: DailyContext] = [:]
+
     
     func addAttack(_ attack: MigraineAttack) {
-        attacks.append(attack)
+        var a = attack
+        let day = Calendar.current.startOfDay(for: attack.startDate)
+        
+        if let ctx = dailyContexts[day] {
+            a.linkedContextDay = day
+            a.linkedContextSnapshot = ctx
+            attacks.append(a)
+        } else {
+            // If context isn't loaded yet, still save the attack now.
+            // We'll fill it later once context arrives.
+            a.linkedContextDay = day
+            attacks.append(a)
+        }
     }
+
+    func upsertContext(_ ctx: DailyContext) {
+        dailyContexts[ctx.id] = ctx
+        
+        // Backfill any attacks logged that day without snapshot
+        for i in attacks.indices {
+            if attacks[i].linkedContextSnapshot == nil {
+                if let day = attacks[i].linkedContextDay, day == ctx.id {
+                    attacks[i].linkedContextSnapshot = ctx
+                }
+            }
+        }
+    }
+
     
     func clearAttacks() {
         attacks.removeAll()
