@@ -4,6 +4,10 @@ struct SettingsView: View {
     @EnvironmentObject var healthKit: HealthKitManager
     @EnvironmentObject var appState: AppState
 
+    @State private var reportURL: URL?
+    @State private var showShareSheet = false
+    @State private var exportErrorMessage: String?
+
     @State private var showClearAlert = false
     @State private var notificationErrorMessage: String?
 
@@ -19,11 +23,19 @@ struct SettingsView: View {
                         reminderCard
                         loggingCard
                         dataCard
+                        exportCard
                         aboutCard
                     }
+
                     .padding()
                 }
             }
+            .sheet(isPresented: $showShareSheet) {
+                if let url = reportURL {
+                    ShareSheet(items: [url])
+                }
+            }
+
             .navigationTitle("Settings")
             .alert("Clear all migraine data?",
                    isPresented: $showClearAlert) {
@@ -94,6 +106,63 @@ extension SettingsView {
         .cardStyle()
     }
 
+    
+    private var exportCard: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("Doctor report")
+                .font(.headline)
+
+            Button {
+                export30DayReport()
+            } label: {
+                HStack {
+                    Image(systemName: "doc.richtext")
+                        .foregroundColor(AppTheme.primary)
+                    Text("Export 30-day PDF report")
+                    Spacer()
+                    Image(systemName: "square.and.arrow.up")
+                        .foregroundColor(.secondary)
+                }
+            }
+            .foregroundColor(.primary)
+
+            if let exportErrorMessage {
+                Text(exportErrorMessage)
+                    .font(.footnote)
+                    .foregroundColor(.red)
+            }
+        }
+        .cardStyle()
+    }
+
+    private func export30DayReport() {
+        exportErrorMessage = nil
+
+        let cal = Calendar.current
+        let to = Date()
+        let from = cal.date(byAdding: .day, value: -30, to: to) ?? to
+
+        let attacks30 = appState.attacks
+            .filter { $0.startDate >= from && $0.startDate <= to }
+            .sorted(by: { $0.startDate > $1.startDate })
+
+        let input = MigraineReportPDFBuilder.ReportInput(
+            profile: appState.profile,
+            fromDate: from,
+            toDate: to,
+            attacks: attacks30
+        )
+
+        do {
+            let url = try MigraineReportPDFBuilder.buildPDF(input: input)
+            reportURL = url
+            showShareSheet = true
+        } catch {
+            exportErrorMessage = "Could not generate the PDF report. Please try again."
+            print("PDF export error:", error.localizedDescription)
+        }
+    }
+
     private var healthCard: some View {
         VStack(alignment: .leading, spacing: 10) {
             Text("Apple Health")
@@ -120,6 +189,7 @@ extension SettingsView {
         }
         .cardStyle()
     }
+
 
     private var reminderCard: some View {
         VStack(alignment: .leading, spacing: 10) {

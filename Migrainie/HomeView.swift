@@ -52,7 +52,7 @@ struct HomeView: View {
                 }
             }
             .sheet(isPresented: $showLogSheet) {
-                LogMigraineView()
+                LogMigraineFlowView()
             }
         }
     }
@@ -84,7 +84,7 @@ struct HomeView: View {
         VStack(alignment: .leading, spacing: 10) {
             Text(appState.profile.username.isEmpty ? "Welcome back" : "Welcome back, \(appState.profile.username)")
                 .font(.title.bold())
-                .foregroundColor(AppTheme.primary)
+                .foregroundColor(.primary)
 
             Text(todayText)
                 .font(.callout)
@@ -240,6 +240,14 @@ struct HomeView: View {
                 Text("Recent attacks")
                     .font(.headline)
                 Spacer()
+                NavigationLink {
+                    AttackListView()
+                } label: {
+                    Text("See all")
+                        .font(.caption)
+                        .foregroundColor(AppTheme.primary)
+                }
+
             }
 
             if appState.attacks.isEmpty {

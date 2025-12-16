@@ -8,7 +8,17 @@ final class AppState: ObservableObject {
     @Published var attacks: [MigraineAttack] = []
     @Published var dailyContexts: [Date: DailyContext] = [:]
 
-    
+    func deleteAttack(_ attack: MigraineAttack) {
+        attacks.removeAll { $0.id == attack.id }
+        save()
+    }
+
+    func updateAttack(_ updated: MigraineAttack) {
+        guard let idx = attacks.firstIndex(where: { $0.id == updated.id }) else { return }
+        attacks[idx] = updated
+        save()
+    }
+
     func addAttack(_ attack: MigraineAttack) {
         var a = attack
         let day = Calendar.current.startOfDay(for: attack.startDate)
@@ -38,7 +48,15 @@ final class AppState: ObservableObject {
         }
     }
 
-    
+    private func save() {
+        do {
+            let data = try JSONEncoder().encode(attacks)
+            UserDefaults.standard.set(data, forKey: "migrainie_attacks")
+        } catch {
+            print("Failed to save attacks:", error)
+        }
+    }
+
     func clearAttacks() {
         attacks.removeAll()
     }
